@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Yêu em</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            font-family: 'Arial', sans-serif;
+            /* Xóa background ban đầu ở đây, chuyển nó vào #main-content */
+        }
+
+        /* --- PHẦN NÚT BẤM BẮT ĐẦU --- */
+        #playButtonContainer {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100vw;
+            height: 100vh;
+            background: #000;
+            position: absolute;
+            z-index: 100;
+        }
+
+        #playButton {
+            padding: 20px 40px;
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #fff;
+            background: linear-gradient(45deg, #ff9a9e, #a18cd1);
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            box-shadow: 0 0 20px rgba(255, 154, 158, 0.7);
+            transition: transform 0.3s ease;
+        }
+
+        #playButton:hover {
+            transform: scale(1.1);
+        }
+
+        /* --- PHẦN INTRO --- */
+        #intro {
+            display: none; /* Ẩn ban đầu */
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            width: 100vw;
+            height: 100vh;
+            background: #1a1a1a; /* Nền tối */
+            color: white;
+            position: absolute;
+            z-index: 50;
+            opacity: 0;
+            transition: opacity 1.5s ease-out;
+        }
+
+        #intro img {
+            width: 250px;
+            height: 250px;
+            border-radius: 20px;
+            object-fit: cover;
+            box-shadow: 0 0 30px rgba(255, 255, 255, 0.2);
+            margin-bottom: 30px;
+        }
+
+        #intro h2 {
+            font-size: 2.2rem;
+            text-shadow: 2px 2px 10px rgba(0, 0, 0, 0.5);
+            margin: 10px 0;
+            opacity: 0; /* Ẩn các dòng text ban đầu */
+            transition: opacity 1.5s ease;
+        }
+
+
+        /* --- PHẦN NỘI DUNG CHÍNH (Của bạn) --- */
+        #main-content {
+            display: none; /* Ẩn ban đầu */
+            opacity: 0;
+            transition: opacity 1.5s ease-in;
+            width: 100%;
+            height: 100%;
+            /* Thêm background của bạn vào đây */
+            background: radial-gradient(circle, #ff9a9e, #fad0c4, #fbc2eb);
+            animation: backgroundShift 10s infinite alternate;
+        }
+
+        @keyframes backgroundShift {
+            0% {
+                background: radial-gradient(circle, #ff9a9e, #fad0c4, #fbc2eb);
+            }
+            100% {
+                background: radial-gradient(circle, #fbc2eb, #a18cd1, #fad0c4);
+            }
+        }
+
+        #canvas {
+            position: relative;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        .content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            color: #fff;
+        }
+
+        .content h1 {
+            font-size: 4rem;
+            text-shadow: 4px 4px 20px rgba(0, 0, 0, 0.5);
+            margin-bottom: 20px;
+            animation: fadeIn 2s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .content img {
+            width: 300px;
+            height: auto;
+            border-radius: 30px;
+            box-shadow: 0px 12px 20px rgba(0, 0, 0, 0.3);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .content img:hover {
+            transform: scale(1.1);
+            box-shadow: 0px 16px 30px rgba(0, 0, 0, 0.5);
+        }
+
+        .content p {
+            font-size: 1.5rem;
+            margin-top: 20px;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 10px 20px;
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+        }
+
+        .lyrics {
+            font-size: 1.8rem;
+            color: #fff;
+            background: linear-gradient(45deg, rgba(66, 66, 66, 0.3), rgba(63, 62, 62, 0.1));
+            padding: 15px 25px;
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+            margin-top: 30px;
+            display: inline-block;
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 1s ease, transform 1s ease, letter-spacing 0.3s ease;
+            animation: fadeInEffect 1s ease-out forwards, bounceEffect 1s infinite;
+        }
+    
+        @keyframes fadeInEffect {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+                letter-spacing: 5px;
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+                letter-spacing: 0;
+            }
+        }
+    
+        @keyframes bounceEffect {
+            0%, 20%, 50%, 80%, 100% {
+                transform: translateY(0);
+            }
+            40% {
+                transform: translateY(-10px);
+            }
+            60% {
+                transform: translateY(-5px);
+            }
+        }
+    
+        .lyrics.show {
+            opacity: 1;
+            transform: translateY(0);
+            animation: fadeInEffect 1s ease-out forwards, bounceEffect 1s infinite;
+        }
+
+        @keyframes fall {
+            0% {
+                transform: translateY(-100px);
+                opacity: 0;
+            }
+            50% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(100vh);
+                opacity: 0;
+            }
+        }
+
+        .heart {
+            position: absolute;
+            width: 25px;
+            height: 25px;
+            top:0%;
+            background: linear-gradient(to bottom, #ff758c, #ff7eb3);
+            transform: rotate(-45deg);
+            animation: fall 6s linear infinite;
+        }
+
+        .heart::before,
+        .heart::after {
+            content: '';
+            position: absolute;
+            width: 25px;
+            height: 25px;
+            background: inherit;
+            border-radius: 50%;
+        }
+
+        .heart::before {
+            top: -12px;
+            left: 0;
+        }
+
+        .heart::after {
+            left: 12px;
+            top: 0;
+        }
+
+        .sparkle {
+            position: absolute;
+            width: 5px;
+            height: 5px;
+            background: white;
+            border-radius: 50%;
+            box-shadow: 0 0 10px white;
+            animation: sparkle 3s infinite ease-in-out;
+        }
+
+        @keyframes sparkle {
+            0%, 100% {
+                opacity: 0;
+                transform: scale(0.5);
+            }
+            50% {
+                opacity: 1;
+                transform: scale(1.5);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="playButtonContainer">
+        <button id="playButton">Bấm vào đây để xem <3</button>
+    </div>
+
+    <div id="intro">
+        <img src="./image/intro-image.jpg" alt="Intro">
+        <h2 id="line1">EM BIẾT ĐIỀU ANH QUÝ NHẤT LÀ GÌ KHÔNG?</h2>
+        <h2 id="line2">LÀ CÓ EM,</h2>
+        <h2 id="line3">ANH YÊU EM NHIỀU LẮM</h2>
+    </div>
+
+    <div id="main-content">
+        <canvas id="canvas"></canvas>
+        <div class="content">
+            <h1>To My Love</h1>
+            <img src="./image/main-image.jpg" alt="Your Love">
+            <p>ANH RẤT YÊU EM ❤️</p>
+            <div class="lyrics" id="lyrics">Loading lyrics...</div>
+        </div>
+    </div>
+
+    <audio id="audio">
+        <source src="./phonecert.m4a" type="audio/mp4">
+    </audio>
+
+    <script>
+        // Lấy các phần tử
+        const playButtonContainer = document.getElementById('playButtonContainer');
+        const playButton = document.getElementById('playButton');
+        const introScreen = document.getElementById('intro');
+        const mainContent = document.getElementById('main-content');
+        const audioElement = document.getElementById('audio');
+        const lyricsElement = document.getElementById('lyrics');
+
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        // --- HÀM TẠO HIỆU ỨNG (Từ code của bạn) ---
+        function createHeart() {
+            const heart = document.createElement('div');
+            heart.classList.add('heart');
+            heart.style.left = Math.random() * 100 + 'vw';
+            heart.style.animationDuration = Math.random() * 2 + 3 + 's';
+            document.body.appendChild(heart);
+            setTimeout(() => heart.remove(), 6000);
+        }
+
+        function createSparkle() {
+            const sparkle = document.createElement('div');
+            sparkle.classList.add('sparkle');
+            sparkle.style.left = Math.random() * canvas.width + 'px';
+            sparkle.style.top = Math.random() * canvas.height + 'px';
+            document.body.appendChild(sparkle);
+            setTimeout(() => sparkle.remove(), 3000);
+        }
+
+        function drawStars() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            for (let i = 0; i < 100; i++) {
+                const x = Math.random() * canvas.width;
+                const y = Math.random() * canvas.height;
+                const size = Math.random() * 2;
+                ctx.beginPath();
+                ctx.arc(x, y, size, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+        
+        // --- LOGIC HIỂN THỊ LYRIC (Từ code của bạn + Sửa lỗi lặp lại) ---
+        const lyricsArray = [
+            { time: 0, text: "Chẳng một ai như anh biết rõ gu nhạc em thích" },
+            { time: 3, text: "Tịch tình tang" },
+            { time: 5.8, text: "Một bài ca trên tông yêu đương nhưng buồn miên man" },
+            { time: 10, text: "Ngày hôm ấy nếu em có nhớ hãy vặn volume thật vừa tai" },
+            { time: 14.3, text: "Ngồi ngay ngắn lắng nghe anh hát cho em một bài" },
+            { time: 18.8, text: "Dù cho anh trông hơi nghiêm trọng" },
+            { time: 20.6, text: "Đừng cười anh, đừng có chê" },
+            { time: 23.3, text: "Bình thường anh ngân nga rất mượt" },
+            { time: 25, text: "Sao hôm nay lại run như thế" },
+            { time: 27.5, text: "Vì khi anh đang đứng trước mặt" },
+            { time: 29.5, text: "Người yêu thương đầy vấn vương" },
+            { time: 32, text: "Anh vẫn sai vẫn quên vấn vấp váp như thường" },
+            { time: 34.6, text: "Cầm vào đàn chơi lên bài hát chỉ dành riêng cho người" },
+            { time: 38.8, text: "Dành tặng người anh yêu khoảnh khắc" },
+            { time: 41.5, text: "Tràn căng những tiếng cười" },
+            { time: 44, text: "Một bài nhạc làm em" },
+            { time: 46, text: "Phải thức cả đêm để phát đi phát lại" },
+            { time: 49, text: "Rồi một mình ôm niềm thích thú" },
+            { time: 51.5, text: "Suốt bao ngày dài" },
+        ];
+        let currentLyricIndex = 0;
+
+        function displayLyric() {
+            const currentTime = audioElement.currentTime;
+            
+            // Sửa lỗi lặp lại (reset index nếu nhạc quay về 0)
+            if (currentLyricIndex > 0 && currentTime < lyricsArray[currentLyricIndex - 1].time) {
+                currentLyricIndex = 0; 
+                lyricsElement.classList.remove('show');
+            }
+
+            if (
+                currentLyricIndex < lyricsArray.length &&
+                currentTime >= lyricsArray[currentLyricIndex].time
+            ) {
+                lyricsElement.textContent = lyricsArray[currentLyricIndex].text;
+                lyricsElement.classList.add('show');
+                setTimeout(() => {
+                    lyricsElement.classList.remove('show');
+                }, 4000); 
+                currentLyricIndex++;
+            }
+            requestAnimationFrame(displayLyric);
+        }
+        
+        audioElement.addEventListener('play', () => {
+            currentLyricIndex = 0; 
+            displayLyric();
+        });
+
+
+        // --- LOGIC CHÍNH: XỬ LÝ NÚT BẤM VÀ CHUYỂN CẢNH ---
+        playButton.addEventListener('click', () => {
+            // 1. Ẩn nút bấm
+            playButtonContainer.style.display = 'none';
+
+            // 2. Hiển thị màn hình Intro
+            introScreen.style.display = 'flex';
+            setTimeout(() => { introScreen.style.opacity = 1; }, 100); // Fade in
+
+            // 3. Chạy animation cho intro text
+            setTimeout(() => {
+                document.getElementById('line1').style.opacity = 1;
+            }, 1000); // 1 giây sau hiện dòng 1
+
+            setTimeout(() => {
+                document.getElementById('line2').style.opacity = 1;
+            }, 3000); // 2 giây sau hiện dòng 2
+
+            setTimeout(() => {
+                document.getElementById('line3').style.opacity = 1;
+            }, 5000); // 2 giây sau hiện dòng 3
+
+            // 4. Chuyển sang màn hình chính
+            setTimeout(() => {
+                // Mờ màn hình intro đi
+                introScreen.style.opacity = 0;
+
+                // Hiển thị màn hình chính
+                mainContent.style.display = 'block';
+                setTimeout(() => { mainContent.style.opacity = 1; }, 500); // Fade in
+
+                // Ẩn hẳn intro đi sau khi mờ
+                setTimeout(() => { introScreen.style.display = 'none'; }, 1500);
+
+                // 5. BẮT ĐẦU PHÁT NHẠC VÀ HIỆU ỨNG (QUAN TRỌNG)
+                audioElement.play();
+                audioElement.loop = true; // Bật lặp lại
+
+                // Bắt đầu các hiệu ứng của bạn
+                setInterval(createHeart, 300);
+                setInterval(createSparkle, 500);
+                setInterval(drawStars, 100);
+
+            }, 8000); // 3 giây sau khi dòng 3 hiện
+        });
+
+    </script>
+</body>
+</html>
